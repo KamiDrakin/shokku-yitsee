@@ -165,7 +165,9 @@ bool _bbranch_contains(_BBranch *b, float k, void *v, unsigned int size) {
     return _bbranch_contains(b->left, k, v, size);
   if (k > b->key)
     return _bbranch_contains(b->right, k, v, size);
-  return memcmp(b->value, v, size) == 0;
+  if (memcmp(b->value, v, size) == 0)
+    return true;
+  return _bbranch_contains(b->right, k, v, size);
 }
 
 BTree btree_create(unsigned int size) {
