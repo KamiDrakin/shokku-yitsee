@@ -9,11 +9,11 @@
 #include "symath.h"
 #include "models.h"
 
-#if defined(PLATFORM_WEB)
+#ifdef PLATFORM_WEB
   #include <emscripten/emscripten.h>
 #endif
 
-#if defined(PLATFORM_DESKTOP)
+#ifdef PLATFORM_DESKTOP
   #define GLSL_VERSION            330
 #else //PLATFORM_ANDROID, PLATFORM_WEB
   #define GLSL_VERSION            100
@@ -551,7 +551,7 @@ void process_keyboard() {
   else
     test_object.animation_index = 0;
   
-#if defined(PLATFORM_DESKTOP)
+#ifdef PLATFORM_DESKTOP
   if (IsKeyPressed(KEY_F11)) {
     if (fullscreen) {
       ClearWindowState(FLAG_FULLSCREEN_MODE);
@@ -810,18 +810,6 @@ void draw_game_object(GameObject *obj) {
     (Vector2){0.0f, 0.0f},
     0.0f, obj->tint
   );
-  /*
-  DrawBillboardPro(
-    cam_point.cam,
-    obj->animations[obj->animation_index].texture,
-    get_game_object_frame(obj),
-    Vector3Add(obj->pos, Vector3Scale(cam_point.rel_up, obj->sprite_size[1] / 2 / TILE_SIZE)),
-    cam_point.rel_up,
-    (Vector2){MAX(obj->sprite_size[0], obj->sprite_size[1]) / TILE_SIZE, MAX(obj->sprite_size[0], obj->sprite_size[1]) / TILE_SIZE},
-    (Vector2){0.0f, 0.0f},
-    0.0f, obj->tint
-  );
-  */
 }
 
 void update_draw() {
@@ -925,7 +913,7 @@ int main(void) {
   setup();
   
   //loop
-#if defined(PLATFORM_WEB)
+#ifdef PLATFORM_WEB
   emscripten_set_main_loop(update_draw, 0, 1);
 #else
   while (!WindowShouldClose())
