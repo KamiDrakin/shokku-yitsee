@@ -42,16 +42,11 @@ Vector2 unclipping_vector(Vector2 p, float r, Vector2 near, Vector2 push_dir) {
   float dist = Vector2Distance(p, near) - r;
   if (dist >= 0)
     return Vector2Zero();
-  //Vector2 edge = Vector2Add(p, Vector2Scale(push_dir, r));
-  //Vector2 edge_dir = Vector2Normalize(Vector2Subtract(near, edge));
   Vector2 dir = Vector2Normalize(Vector2Subtract(near, p));
   float dot = Vector2DotProduct(push_dir, dir);
   if (dot > 0.0f)
     return Vector2Zero();
-  //  return Vector2Scale(push_dir, dot * (dist + r * 2));
-  //  Vector2Zero();
   return Vector2Scale(push_dir, dot * dist);
-  //return Vector2Scale(edge_dir, dist);
 }
 
 #endif

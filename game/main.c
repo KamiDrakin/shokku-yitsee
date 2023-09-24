@@ -8,6 +8,7 @@
 #include "datstructs.h"
 #include "symath.h"
 #include "models.h"
+#include "maps.h"
 
 #ifdef PLATFORM_WEB
   #include <emscripten/emscripten.h>
@@ -56,7 +57,7 @@
 #define MAX_NAME_LENGTH 20
 #define MAX_FACINGS 8
 #define MAX_ANIMATIONS 16
-#define STEP_SNAP_HEIGHT 0.67f
+#define STEP_SNAP_HEIGHT 0.5f
 #define GRAVITY 20.0f
 
 #define MAX_USABLE_ITEMS 4
@@ -452,7 +453,7 @@ void setup() {
   
   for (int i = 0; i < 64; i++) {
     WorldChunk *chunk = test_chunks + i;
-    chunk->max_height = 2.0f;
+    chunk->max_height = 5.0f;
     for (int j = 0; j < CHUNK_SIZE_S; j++)
       chunk->height_map[j] = rand() * 2.0f / (float)RAND_MAX;
     int x = i % 8;
@@ -466,6 +467,7 @@ void setup() {
     if (x > 0)
       join_chunks(chunk, CARDINAL_WEST, test_chunks + i - 1);
   }
+  memcpy(test_chunks, &test_0_0_height_map, CHUNK_SIZE_S * sizeof(float));
   for (int i = 0; i < 64; i++) {
     WorldChunk *chunk = test_chunks + i;
     int c_test_vertices;
@@ -720,8 +722,8 @@ void move_game_object(GameObject *obj, Vector2 v) {
   float highest_point = get_chunk_height_at(obj->current_chunk, new_pos);
   while (uqueue_pop(&lifters, &pusher)) {
     pusher.p = closest_point_on_line(pusher.v1, pusher.v2, new_pos);
-    float dist = Vector2Length(Vector2Subtract(pusher.p, new_pos));
-    if (dist >= obj->radius)
+    float dist_sqr = Vector2LengthSqr(Vector2Subtract(pusher.p, new_pos));
+    if (dist_sqr >= pow(obj->radius, 2))
       continue;
     if (highest_point < pusher.h)
       highest_point = pusher.h;
