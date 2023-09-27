@@ -897,7 +897,11 @@ void update_draw() {
 
 int main(void) {
   //init
+#ifdef PLATFORM_WEB
+  SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+#else
   SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
+#endif
   InitWindow(INITIAL_SCREEN_W, INITIAL_SCREEN_H, "Shokku-Yitsee");
   
   SetWindowMinSize(GAME_W, GAME_H);

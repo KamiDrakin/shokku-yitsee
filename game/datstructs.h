@@ -105,29 +105,28 @@ UQueue uqueue_copy(UQueue *q) {
 }
 
 _BBranch *_bbranch_destroy(_BBranch *b) {
-  if (b == NULL)
-    return NULL;
-  if (b->left != NULL)
+  if (!b)
+    return 0;
+  if (b->left)
     b->left = _bbranch_destroy(b->left);
-  if (b->right != NULL)
+  if (b->right)
     b->right = _bbranch_destroy(b->right);
-  if (b->value != NULL)
+  if (b->value)
     free(b->value);
   free(b);
-  return NULL;
+  return 0;
 }
 
 _BBranch *_bbranch_push(_BBranch *b, float k, void *v, unsigned int size) {
-  if (b == NULL) {
+  if (!b) {
     b = malloc(sizeof(_BBranch));
-    b->left = NULL;
-    b->right = NULL;
+    b->left = 0;
+    b->right = 0;
     b->key = k;
     b->value = malloc(size);
     memcpy(b->value, v, size);
-    return b;
   }
-  if (k < b->key)
+  else if (k < b->key)
     b->left = _bbranch_push(b->left, k, v, size);
   else
     b->right = _bbranch_push(b->right, k, v, size);
@@ -135,10 +134,10 @@ _BBranch *_bbranch_push(_BBranch *b, float k, void *v, unsigned int size) {
 }
 
 _BBranch *_bbranch_pop_low(_BBranch *b, void *v, unsigned int size) {
-  if (b->left == NULL) {
+  if (!b->left) {
     memcpy(v, b->value, size);
     _BBranch *new_b = b->right;
-    b->right = NULL;
+    b->right = 0;
     b = _bbranch_destroy(b);
     return new_b;
   }
@@ -147,10 +146,10 @@ _BBranch *_bbranch_pop_low(_BBranch *b, void *v, unsigned int size) {
 }
 
 _BBranch *_bbranch_pop_high(_BBranch *b, void *v, unsigned int size) {
-  if (b->right == NULL) {
+  if (!b->right) {
     memcpy(v, b->value, size);
     _BBranch *new_b = b->left;
-    b->left = NULL;
+    b->left = 0;
     b = _bbranch_destroy(b);
     return new_b;
   }
@@ -159,7 +158,7 @@ _BBranch *_bbranch_pop_high(_BBranch *b, void *v, unsigned int size) {
 }
 
 bool _bbranch_contains(_BBranch *b, float k, void *v, unsigned int size) {
-  if (b == NULL)
+  if (!b)
     return false;
   if (k < b->key)
     return _bbranch_contains(b->left, k, v, size);
@@ -172,6 +171,7 @@ bool _bbranch_contains(_BBranch *b, float k, void *v, unsigned int size) {
 
 BTree btree_create(unsigned int size) {
   BTree t;
+  t.root = 0;
   t.size = size;
   return t;
 }
@@ -185,14 +185,14 @@ void btree_push(BTree *t, float k, void *v) {
 }
 
 bool btree_pop_low(BTree *t, void *v) {
-  if (t->root == NULL)
+  if (!t->root)
     return false;
   t->root = _bbranch_pop_low(t->root, v, t->size);
   return true;
 }
 
 bool btree_pop_high(BTree *t, void *v) {
-  if (t->root == NULL)
+  if (!t->root)
     return false;
   t->root = _bbranch_pop_high(t->root, v, t->size);
   return true;
