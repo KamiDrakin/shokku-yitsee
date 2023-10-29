@@ -903,6 +903,13 @@ int main(void) {
   SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
 #endif
   InitWindow(INITIAL_SCREEN_W, INITIAL_SCREEN_H, "Shokku-Yitsee");
+
+#ifndef PLATFORM_WEB
+  Image icon_image;
+  icon_image = LoadImage("./res/textures/icon.png");
+  SetWindowIcon(icon_image);
+  UnloadImage(icon_image);
+#endif
   
   SetWindowMinSize(GAME_W, GAME_H);
   render_target = LoadRenderTexture(GAME_W, GAME_H);
