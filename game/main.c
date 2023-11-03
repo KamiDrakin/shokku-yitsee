@@ -218,6 +218,8 @@ struct ObjectKeeper {
   UQueue inactive_npcs;
 };
 
+int get_screen_width();
+int get_screen_height();
 Color color_d(unsigned char r, unsigned char g, unsigned char b, unsigned char a); //Returns color with applied depth.
 float *generate_chunk_vertices(WorldChunk *chunk, int *c_vertices); //Generates vertices from a WorldChunk height map.
 WorldChunk *get_chunk_at(WorldChunk *origin, Vector2 pos); //Returns a neighbouring chunk if given position is out of bounds.
@@ -237,7 +239,6 @@ Rectangle get_game_object_frame(GameObject *obj); //Get the current animation/fa
 void draw_game_object(GameObject *obj);
 void update_draw(); //Update and draw.
 
-bool fullscreen = false;
 float delta;
 float screen_scale;
 
@@ -263,6 +264,24 @@ GameObject test_object = {0};
 
 float turn_keeper = 0.0f;
 bool next_turn;
+
+int get_screen_width() {
+  if (IsWindowFullscreen()) {
+    int monitor = GetCurrentMonitor();
+    return GetMonitorWidth(monitor);
+  }
+  else
+    return GetScreenWidth();
+}
+
+int get_screen_height() {
+  if (IsWindowFullscreen()) {
+    int monitor = GetCurrentMonitor();
+    return GetMonitorHeight(monitor);
+  }
+  else
+    return GetScreenHeight();
+}
 
 Color color_d(unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
   float ratio_r = (float)r / 0xff;
@@ -558,18 +577,17 @@ void process_keyboard() {
   else
     test_object.animation_index = 0;
   
-#ifdef PLATFORM_DESKTOP
+#ifndef PLATFORM_WEB
   if (IsKeyPressed(KEY_F11)) {
-    if (fullscreen) {
-      ClearWindowState(FLAG_FULLSCREEN_MODE);
+    if (IsWindowFullscreen()) {
+      ToggleFullscreen();
       SetWindowSize(INITIAL_SCREEN_W, INITIAL_SCREEN_H);
     }
     else {
       int monitor = GetCurrentMonitor();
       SetWindowSize(GetMonitorWidth(monitor), GetMonitorHeight(monitor));
-      SetWindowState(FLAG_FULLSCREEN_MODE);
+      ToggleFullscreen();
     }
-    fullscreen = !fullscreen;
   }
 #endif
 }
@@ -594,8 +612,8 @@ void process_touch() {
     c_touch_points = 0;
   for (int i = 0; i < c_touch_points; i++) {
     raw_touch_points[i] = GetTouchPosition(i);
-    touch_points[i].x = (raw_touch_points[i].x - (GetScreenWidth() - (GAME_W * screen_scale)) * 0.5f) / screen_scale;
-    touch_points[i].y = (raw_touch_points[i].y - (GetScreenHeight() - (GAME_H * screen_scale)) * 0.5f) / screen_scale;
+    touch_points[i].x = (raw_touch_points[i].x - (get_screen_width() - (GAME_W * screen_scale)) * 0.5f) / screen_scale;
+    touch_points[i].y = (raw_touch_points[i].y - (get_screen_height() - (GAME_H * screen_scale)) * 0.5f) / screen_scale;
     if (prev_touch_points[i].x > 0.0f || prev_touch_points[i].y > 0.0f)
       touch_diffs[i] = Vector2Subtract(touch_points[i], prev_touch_points[i]);
   }
@@ -827,7 +845,7 @@ void update_draw() {
     turn_keeper -= 1.0f;
     next_turn = true;
   }
-  screen_scale = MIN((float)GetScreenWidth() / GAME_W, (float)GetScreenHeight() / GAME_H);
+  screen_scale = MIN((float)get_screen_width() / GAME_W, (float)get_screen_height() / GAME_H);
   
   input.move_speed = INV_DIVINE * 10.0f;
   input.move_translate = Vector3Zero();
@@ -866,6 +884,8 @@ void update_draw() {
     };
     SetShaderValue(basic3d.shader, basic3d.light_src_loc, light_source, SHADER_UNIFORM_VEC3);
   }
+
+  printf("%d %d\n", get_screen_width(), get_screen_height());
   
   //draw
   BeginTextureMode(render_target);
@@ -886,7 +906,7 @@ void update_draw() {
     DrawTexturePro(
       render_target.texture,
       (Rectangle){0.0f, 0.0f, (float)render_target.texture.width, (float)-render_target.texture.height},
-      (Rectangle){(GetScreenWidth() - ((float)GAME_W * screen_scale)) * 0.5f, (GetScreenHeight() - ((float)GAME_H * screen_scale)) * 0.5f,
+      (Rectangle){(get_screen_width() - ((float)GAME_W * screen_scale)) * 0.5f, (get_screen_height() - ((float)GAME_H * screen_scale)) * 0.5f,
       (float)GAME_W * screen_scale, (float)GAME_H * screen_scale}, (Vector2){0, 0}, 0.0f, WHITE
     );
     DrawFPS(10, 10);
