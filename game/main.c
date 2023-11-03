@@ -513,6 +513,11 @@ void setup() {
   cam_point.follow_obj = &test_object;
 }
 
+void cleanup() {
+  UnloadShader(basic3d.shader);
+  UnloadShader(basic2d.shader);
+}
+
 void process_keyboard() {
   Vector3 cam_forward_xz = Vector3Normalize((Vector3){cam_point.forward.x, 0.0f, cam_point.forward.z});
   if (IsKeyDown(KEY_LEFT_SHIFT))
@@ -751,7 +756,7 @@ void move_game_object(GameObject *obj, Vector2 v) {
 void draw_background() {
   float mul = 0.125 / cam_point.rot_v_pi;
   BeginShaderMode(basic2d.shader);
-  DrawRectangleGradientV(0, 0, GAME_W, GAME_H * 4 / 7 * mul, color_d(0x99 / 3, 0x0, 0xff / 3, 0xff), BLACK);
+  DrawRectangleGradientV(0, 0, GAME_W, GAME_H * 4 * mul / 7, color_d(0x99 / 3, 0x0, 0xff / 3, 0xff), BLACK);
   EndShaderMode();
 }
 
@@ -780,7 +785,7 @@ Rectangle get_game_object_frame(GameObject *obj) {
   frame.x = (int)anim->frame_index * obj->sprite_size[0];
   if (frame.x >= anim->texture.width) {
     frame.x = 0.0f;
-    anim->frame_index -= anim->texture.width / obj->sprite_size[0];
+    anim->frame_index -= (float)anim->texture.width / obj->sprite_size[0];
   }
   if (obj->c_facings < 2)
     frame.y = 0.0f;
@@ -806,7 +811,7 @@ void draw_game_object(GameObject *obj) {
     cam_point.cam,
     obj->animations[obj->animation_index].texture,
     get_game_object_frame(obj),
-    Vector3Add(obj->pos, (Vector3){0.0f, obj->sprite_size[1] / 2 / TILE_SIZE / cam_point.cos_rot_v, 0.0f}),
+    Vector3Add(obj->pos, (Vector3){0.0f, (float)obj->sprite_size[1] / 2 / TILE_SIZE / cam_point.cos_rot_v, 0.0f}),
     (Vector3){0.0f, 1.0f, 0.0f}, //cam_point.rel_up,
     (Vector2){MAX(obj->sprite_size[0], obj->sprite_size[1]) / TILE_SIZE, MAX(obj->sprite_size[0], obj->sprite_size[1]) / TILE_SIZE / cam_point.cos_rot_v},
     (Vector2){0.0f, 0.0f},
@@ -934,8 +939,7 @@ int main(void) {
 #endif
   
   //deinit
-  UnloadShader(basic3d.shader);
-  //UnloadModel(test_chunk.model);
+  cleanup();
   UnloadRenderTexture(render_target);
   CloseWindow();
   
