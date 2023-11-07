@@ -218,8 +218,8 @@ struct ObjectKeeper {
   UQueue inactive_npcs;
 };
 
-int get_screen_width();
-int get_screen_height();
+int get_screen_width(); //Wrapped GetScreenWidth for better fullscreen compatibility.
+int get_screen_height(); //Wrapped GetScreenHeight for better fullscreen compatibility.
 Color color_d(unsigned char r, unsigned char g, unsigned char b, unsigned char a); //Returns color with applied depth.
 float *generate_chunk_vertices(WorldChunk *chunk, int *c_vertices); //Generates vertices from a WorldChunk height map.
 WorldChunk *get_chunk_at(WorldChunk *origin, Vector2 pos); //Returns a neighbouring chunk if given position is out of bounds.
@@ -228,6 +228,7 @@ void join_chunks(WorldChunk *chunk1, Cardinals cardinal, WorldChunk *chunk2); //
 void calculate_normals(float *normals, const float *vertices, int c_vertices); //Calculates normals for each triangle.
 Mesh generate_mesh(const float *vertices, int c_vertices); //Generates a custom Mesh (all vertices WHITE).
 void setup(); //Sets up the game.
+void cleanup(); //Free all remaining objects.
 void process_keyboard(); //Processes keyboard inputs.
 void process_mouse(); //Processes mouse inputs.
 void process_controller(); //Processes controller inputs.
@@ -270,8 +271,7 @@ int get_screen_width() {
     int monitor = GetCurrentMonitor();
     return GetMonitorWidth(monitor);
   }
-  else
-    return GetScreenWidth();
+  return GetScreenWidth();
 }
 
 int get_screen_height() {
@@ -279,8 +279,7 @@ int get_screen_height() {
     int monitor = GetCurrentMonitor();
     return GetMonitorHeight(monitor);
   }
-  else
-    return GetScreenHeight();
+  return GetScreenHeight();
 }
 
 Color color_d(unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
@@ -885,8 +884,6 @@ void update_draw() {
     SetShaderValue(basic3d.shader, basic3d.light_src_loc, light_source, SHADER_UNIFORM_VEC3);
   }
 
-  printf("%d %d\n", get_screen_width(), get_screen_height());
-  
   //draw
   BeginTextureMode(render_target);
     ClearBackground(BLACK);
