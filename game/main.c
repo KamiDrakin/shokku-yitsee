@@ -548,13 +548,13 @@ void process_keyboard() {
     input.move_translate = Vector3Add(input.move_translate, cam_point.left);
   if (IsKeyDown(KEY_D))
     input.move_translate = Vector3Subtract(input.move_translate, cam_point.left);
-  if (IsKeyDown(KEY_Q))
+  if (IsKeyDown(KEY_J))
     input.cam_rotate += 0.2f;
-  if (IsKeyDown(KEY_E))
+  if (IsKeyDown(KEY_L))
     input.cam_rotate -= 0.2f;
-  if (IsKeyDown(KEY_R))
+  if (IsKeyDown(KEY_I))
     input.cam_rotate_v -= 0.1f;
-  if (IsKeyDown(KEY_F))
+  if (IsKeyDown(KEY_K))
     input.cam_rotate_v += 0.1f;
   input.move_translate = Vector3Scale(Vector3Normalize(input.move_translate), input.move_speed);
   
@@ -563,7 +563,7 @@ void process_keyboard() {
   if (IsKeyDown(KEY_G))
     input.zoom_factor -= 0.3f;
   
-  if (IsKeyPressed(KEY_L)) {
+  if (IsKeyPressed(KEY_Y)) {
     SetShaderValue(basic3d.shader, basic3d.light_intensity_loc, (float[1]){light_switch ? 12000.0f : INV_DIVINE * 10.0f}, SHADER_UNIFORM_FLOAT);
     light_switch = !light_switch;
   }
