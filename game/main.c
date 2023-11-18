@@ -913,7 +913,8 @@ void update_draw() {
     DrawText(TextFormat("%x", test_object.current_chunk), 10, 130, 20, color_d(0xcc, 0xff, 0xcc, 0xff));
     if (next_turn)
       DrawText("boop", 10, 160, 20, color_d(0xcc, 0xcc, 0xff, 0xff));
-    DrawText(TextFormat("%f", get_chunk_height_at(test_object.current_chunk, vector3_xz(test_object.pos))), 10, 190, 20, color_d(0xcc, 0xcc, 0xff, 0xff));
+    // DrawText(TextFormat("%f", get_chunk_height_at(test_object.current_chunk, vector3_xz(test_object.pos))), 10, 190, 20, color_d(0xcc, 0xcc, 0xff, 0xff));
+    DrawText("WASD IJKL GT Y", 10, get_screen_height() - 30, 20, WHITE);
   EndDrawing(); 
 }
 
